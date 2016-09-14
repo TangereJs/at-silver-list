@@ -1,0 +1,176 @@
+<link rel="import" href="../tangere/tangere.html">
+<link rel="import" href="../at-core-searchbox/at-core-searchbox.html">
+<link rel="import" href="../at-core-activity/at-core-activity.html">
+<link rel="import" href="../at-core-cardlist/at-core-cardlist.html">
+<link rel="import" href="../at-carbon-pager/at-carbon-pager.html">
+
+<dom-module id="at-silver-list">
+
+  <style>
+    :host {
+      position: relative;
+      width: 100%;
+      display: block;
+    }
+
+    at-core-searchbox {
+      padding: 16px;
+    }
+
+    at-carbon-pager {
+      padding: 16px;
+    }
+  </style>
+
+  <template>
+    <at-core-activity id="app" on-response="bindAppInfo"></at-core-activity>
+    <at-core-activity id="activity" on-response="bindList" on-error="activityError"></at-core-activity>
+    <at-core-searchbox id="sb" search-term="{{searchTerm}}" style="display:none"></at-core-searchbox>
+    <at-core-cardlist id="list" card-width="320" layout="{{cardLayout}}" on-list-ready="_listReady"></at-core-cardlist>
+    <at-carbon-pager id="pager" page="{{page}}" page-size="{{pageSize}}"></at-carbon-pager>
+  </template>
+
+</dom-module>
+
+<script>
+  Polymer({
+    is: "at-silver-list",
+    properties: {
+      searchTerm: {
+        type: String,
+        value: "",
+        notify: true
+      },
+      service: {
+        type: String,
+        value: "",
+        notify: true
+      },
+      page: {
+        type: Number,
+        value: 1,
+        notify: true
+      },
+      pageSize: {
+        type: Number,
+        value: 18,
+        notify: true
+      },
+      itemComponent: {
+        type: String,
+        value: "",
+        notify: true
+      },
+      hideSearchBox: {
+        type: Boolean,
+        value: false,
+        notify: true
+      },
+      cardLayout: {
+        type: String,
+        value: "card"
+      },
+      view: {
+        type: String,
+        value: "",
+        notify: true,
+        xtype: "code",
+        mode: "liquid"
+      }
+    },
+    $meta: [{
+      title: "Cards",
+      type: "element",
+      xtype: "at-silver-list",
+      events: ["value-changed"],
+      invisible: true
+    }],
+    observers: [
+      'start(searchTerm, service, page, pageSize,itemComponent,hideSearchBox,view)'
+    ],
+
+    start: function () {
+
+      this.debounce('silver-list-start', function () {
+
+        if (this.hideSearchBox) {
+          this.$.sb.style.display = 'none';
+        } else {
+          this.$.sb.style.display = 'block';
+        }
+
+        if (!this.service) return;
+
+        var infoUrl = "/api/adenin.GateKeeper.Content/app/" + this.service;
+        if (infoUrl != this.$.app.url) {
+          this.$.app.url = infoUrl;
+          this.$.app.generateRequest();
+        }
+
+        this.$.activity.url = "/Activity/adenin.GateKeeper.Service/Proxy/" + this.service;
+
+        if (this._searchTerm != this.searchTerm || this._service != this.service) {
+
+          // when search term changes restart with page 1
+          if (typeof (this._searchTerm) != "undefined" && this.page != 1) {
+            this.page = 1;
+          }
+
+          if (this.page < 1) this.page = 1;
+
+          this._searchTerm = this.searchTerm;
+          this._service = this.service;
+
+        }
+
+        this.$.list.clear();
+        if (this.view) {
+          this.$.list.itemComponent = "";
+          this.$.list.view = this.view;
+        } else {
+          this.$.list.view = "";
+          this.$.list.itemComponent = this.itemComponent;
+        }
+
+        this.$.list.indicator = true; // show loading indicator for list
+        this.$.pager.hide = true;     // hide pager while loading
+
+        this.$.activity.params = {
+          query: this.searchTerm,
+          page: this.page,
+          pageSize: this.pageSize
+        };
+        this.$.activity.generateRequest();
+      }, 200);
+    },
+    activityError: function () {
+      // AJAX request failed -> hide list loading indicator
+      this.$.list.indicator = false;
+    },
+    bindAppInfo: function () {
+      if (!this.hideSearchBox) {
+        // when search box is hidden then element is embeded, so we should not set app caption
+        if (!!this.$.app.lastResponse.title) Polymer.signal("app-caption", this.$.app.lastResponse.title);
+      }
+    },
+    bindList: function () {
+
+      if (!!this.$.activity.lastResponse.items && !this.$.activity.lastResponse.items.length) {
+        // empty search term && no response -> don't show empty list error
+        this.$.list.indicator = false;
+        this.$.pager.itemCount = 0;
+        this.$.pager.hide = false;
+        return;
+      }
+      // bind list to response data
+      this.$.list.items = this.$.activity.lastResponse.items;
+      this.$.pager.itemCount = !this.$.activity.lastResponse.items ? 0 : this.$.activity.lastResponse.items.length;
+    },
+    _listReady: function () {
+      this.$.pager.hide = false; //show pager wher list is rendered
+    },
+    ready: function () {
+
+    }
+  });
+</script>

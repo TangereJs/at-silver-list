@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+  <title>at-core-cardlist demo</title>
+  <meta name="viewport" content="width=device-width">
+  <script src="../webcomponentsjs/webcomponents-lite.js"></script>
+  <link rel="import" href="../tangere/tangere.html">
+
+  <link rel="import" href="at-silver-list.html">
+
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <at-silver-list id="list"></at-silver-list>
+
+  <script>
+    document.addEventListener('WebComponentsReady', function () {
+      var list = document.getElementById('list');
+
+      list.service = "atmicro";
+      list.view = "{{title}}";
+
+    });
+  </script>
+
+</body>
+</html>

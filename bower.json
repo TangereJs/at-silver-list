@@ -1,0 +1,8 @@
+{
+  "name": "at-silver-list",
+  "version": "1.0.0.106",
+  "private": true,
+  "dependencies": {
+    "polymer": "Polymer/polymer#master"
+  }
+}

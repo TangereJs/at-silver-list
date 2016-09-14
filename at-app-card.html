@@ -1,0 +1,177 @@
+<link rel="import" href="../at-core-view/at-core-view.html">
+<link rel="import" href="../at-carbon-clamp/at-carbon-clamp.html">
+<link rel="import" href="../at-carbon-moment/at-carbon-moment.html">
+<link rel="import" href="../at-carbon-avatar/at-carbon-avatar.html">
+<link rel="import" href="../at-carbon-icon-color/at-carbon-icon-color.html">
+
+<dom-module id="at-app-card">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      .card {
+        cursor: pointer;
+      }
+
+      .header {
+        line-height: 24px;
+        @apply(--layout-horizontal);
+        @apply(--layout-center);
+        margin: 16px;
+      }
+
+      .title {
+        opacity: var(--at-secondary-opacity);
+        @apply(--paper-font-caption);
+        @apply(--layout-flex);
+      }
+
+      .ago {
+        opacity: var(--at-secondary-opacity);
+        @apply(--paper-font-caption);
+      }
+
+      .logo {
+        @apply(--layout-self-center);
+        margin-right: 8px;
+        width: 18px;
+        height:18px;
+      }
+
+      .avatar {
+        @apply(--layout-self-center);
+      }
+
+      .item {
+        @apply(--layout-horizontal);
+        margin: 16px;
+      }
+
+      .footer {
+        @apply(--layout-horizontal);
+        margin: 12px;
+      }
+
+      .footer a {
+        @apply(--layout-self-center);
+      }
+
+      .content {
+        @apply(--layout-flex);
+      }
+
+      .sep {
+        width: 100%;
+        height: 1px;
+        background-color: #000000;
+        opacity: var(--at-divider-opacity);
+      }
+
+      .actionicon {
+        @apply(--layout-self-center);          
+        color: var(--at-action-color);
+        width: var(--at-inline-icon-size);
+        height: var(--at-inline-icon-size);
+        margin-right: 4px;
+      }
+    </style>
+    <at-core-view model="{{_model}}" id="template" class="unselectable">
+      <template preserve-content>
+
+        <div class="card" on-tap="startSearch">
+
+          <div class="header">
+
+            <at-carbon-icon-color class="logo" icon="{{_card.Icon}}" color="{{_card.IconColor}}"></at-carbon-icon-color>
+
+            <div class="title">
+              {{_card.Title}}
+            </div>
+
+            <div class="ago">
+              <at-carbon-moment datetime="{{_card.UpdateDate}}" utc from-now auto-refresh-rate="10"></at-carbon-moment>
+            </div>
+
+          </div>
+
+          {% for item in items limit:3 %}
+          {% if items.length > 1 %}
+          <div class="sep"></div>
+          {% endif %}
+
+          <div class="item" url="{{item.link}}" on-tap="handleTap">
+
+            <div class="content">
+              <at-carbon-clamp lines="2">{{item.title}}</at-carbon-clamp>
+              <div class="title">{{item.description}}</div>
+              <at-carbon-moment class="title" datetime="{{item.date}}" utc from-now auto-refresh-rate="10"></at-carbon-moment>            
+            </div>
+            <at-carbon-avatar class="avatar" avatar="{{item.user}}"></at-carbon-avatar>
+
+          </div>
+          {% endfor %}
+
+          {% if items.length > 3 %}
+          <div class="sep"></div>
+          <a href="{{_card.AppUrl}}">
+            <div class="footer">
+              {% if _container == "search" %}
+              <at-carbon-icon class="actionicon" icon="now:search"></at-carbon-icon>
+              <div>View all results</div>
+              {% else %}
+              <at-carbon-icon class="actionicon" icon="now:arrow-right"></at-carbon-icon>
+              <div>View all</div>
+              {% endif %}
+            </div>
+          </a>
+          {% endif %}
+        </div>
+      </template>
+    </at-core-view>
+  </template>
+</dom-module>
+
+<script>
+  Polymer({
+    is: 'at-app-card',
+    properties: {
+      model: {
+        type: Object,
+        value: null,
+        notify: true,
+        observer: "modelChanged"
+      },
+      _model: {
+        type: Object,
+        value: null,
+        notify: true
+      }
+
+    },
+    attached: function () {
+
+    },
+    startSearch: function () {
+      Polymer.signal("navigate-to", this.model._card.AppUrl);
+    },
+    handleTap: function (e) {
+      // allow childs to set a different target url, if not provided use default url
+      var href = e.url ? e.url : e.currentTarget.attributes.url.value;
+      if (href) {
+        window.open(href, '_blank');
+      }
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    },
+    modelChanged: function () {
+
+      if (!this.model) return;
+
+      
+      this._model = this.model;
+    }
+  });
+</script>
