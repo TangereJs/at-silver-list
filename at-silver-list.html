@@ -76,6 +76,12 @@
         notify: true,
         xtype: "code",
         mode: "liquid"
+      },
+      value: {
+        type: Object,
+        notify: true,
+        value: null,
+        readOnly: true
       }
     },
     $meta: [{
@@ -83,7 +89,7 @@
       type: "element",
       xtype: "at-silver-list",
       events: ["value-changed"],
-      invisible: true
+      stateProperties: ["page", "pageSize", "searchTerm", "service"]
     }],
     observers: [
       'start(searchTerm, service, page, pageSize,itemComponent,hideSearchBox,view)'
@@ -154,6 +160,8 @@
       }
     },
     bindList: function () {
+
+      this._setValue(this.$.activity.lastResponse);
 
       if (!!this.$.activity.lastResponse.items && !this.$.activity.lastResponse.items.length) {
         // empty search term && no response -> don't show empty list error
