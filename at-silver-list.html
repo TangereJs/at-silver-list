@@ -136,6 +136,15 @@
 
         }
 
+        if (this._page != this.page) {
+
+          if (this._page) {
+            // scroll to top if view changes
+            Polymer.signal("app-scroll-to-top");
+          }
+          this._page = this.page;
+        }
+
         this.$.list.clear();
         if (this.view) {
           this.$.list.itemComponent = "";
