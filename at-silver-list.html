@@ -26,7 +26,7 @@
   <template>
     <at-core-activity id="app" on-response="bindAppInfo"></at-core-activity>
     <at-core-activity id="activity" on-response="bindList" on-error="activityError"></at-core-activity>
-    <at-core-searchbox id="sb" search-term="{{searchTerm}}" style="display:none"></at-core-searchbox>
+    <at-core-searchbox id="sb" search-term="{{searchTerm}}" placeholder="{{searchPlaceholder}}" style="display:none"></at-core-searchbox>
     <at-core-list id="list" card-width="320" card-height="{{cardHeight}}" layout="{{cardLayout}}" on-list-ready="_listReady"></at-core-list>
     <at-carbon-pager id="pager" page="{{page}}" page-size="{{pageSize}}"></at-carbon-pager>
   </template>
@@ -41,6 +41,11 @@
         type: String,
         value: "",
         notify: true
+      },
+      searchPlaceholder: {
+        type: String,
+        value: '',
+        reflect: true
       },
       service: {
         type: String,
