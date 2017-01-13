@@ -3,6 +3,14 @@
   "version": "1.0.0.130",
   "private": true,
   "dependencies": {
-    "polymer": "Polymer/polymer#master"
+    "tangere": "TangereJs/tangere#0.8-preview",
+    "at-core-searchbox": "TangereJs/at-core-searchbox#0.8-preview",
+    "at-core-activity": "TangereJs/at-core-activity#0.8-preview",
+    "at-core-list": "TangereJs/at-core-list#0.8-preview",
+    "at-carbon-pager": "TangereJs/at-carbon-pager#0.8-preview",
+    "at-core-view": "TangereJs/at-core-view#0.8-preview",
+    "at-carbon-clamp": "TangereJs/at-carbon-clamp#0.8-preview",
+    "at-carbon-moment": "TangereJs/at-carbon-moment#0.8-preview",
+    "at-carbon-icon-color": "TangereJs/at-carbon-icon-color#0.8-preview"
   }
 }
